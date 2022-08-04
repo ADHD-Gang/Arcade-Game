@@ -1,14 +1,24 @@
 package application.controller;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.QuadCurve;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 public class MainController {
@@ -27,10 +37,31 @@ public class MainController {
 	@FXML private Button gameEndBuffer;
 	@FXML private Label player1Score;
 	@FXML private Label player2Score;
+	@FXML private AnchorPane hangmanScreen;
+	@FXML private AnchorPane hangmanGame;
+	@FXML private AnchorPane hangmanTitle;
+	@FXML private Circle hangmanHead;
+	@FXML private Line hangmanLeftLeg;
+	@FXML private Line hangmanRightLeg;
+	@FXML private Line hangmanLeftArm;
+	@FXML private Line hangmanRightArm;
+	@FXML private Line hangmanBody;
+	@FXML private Label hangmanLettersGuessed;
+	@FXML private TextField wordBox;
+	@FXML private Label errorMsg;
+	@FXML private Label wordToGuess;
+	@FXML private Button hangmanGameEndBuffer;
+	@FXML private QuadCurve hangmanMouth;
+	@FXML private Line hangmanLeftEye1;
+	@FXML private Line hangmanLeftEye2;
+	@FXML private Line hangmanRightEye1;
+	@FXML private Line hangmanRightEye2;
 	
 	private int player1ScoreNum = 0;
 	private int player2ScoreNum = 0;
 	private int playerTurn = 0;
+	private String hangmanWord = null;
+	private int strikes = 0;
 	
 	public void initialize() {
 		System.out.println("- Function initialize() Triggered");
@@ -87,6 +118,221 @@ public class MainController {
 		getScorePane().setDisable(false);
 		getScorePane().setVisible(true);
 		System.out.println("- Function loadMenu() Completed");
+	}
+	
+	@FXML public void loadHangman(ActionEvent event) {
+		System.out.println("- Function loadHangman() Triggered");
+		
+		getMenuBar().setVisible(false);
+		getMenuBar().setDisable(true);
+		getMenu().setVisible(false);
+		getMenu().setDisable(true);
+		
+		getHangmanScreen().setDisable(false);
+		getHangmanScreen().setVisible(true);
+		getHangmanTitle().setDisable(false);
+		getHangmanTitle().setVisible(true);
+		getHangmanGame().setDisable(false);
+		getHangmanGame().setVisible(true);
+		clearHangmanBoard();
+		modifyScorePane(10,90,Color.BLACK);
+		getScorePane().setDisable(false);
+		getScorePane().setVisible(true);
+		updateTurn("hangman",true);
+		getTurnLabel().setDisable(false);
+		getTurnLabel().setVisible(true);
+		
+		System.out.println("- Function loadHangman() Completed");
+    }
+	
+	@FXML public void hangmanPickWord() throws IOException {
+		System.out.println("- Function hangmanPickWord() Triggered");
+		
+		BufferedReader wordsReader = new BufferedReader(new FileReader("data/HangmanWords.txt"));
+		ArrayList<String> words = new ArrayList<String>();
+		Random rand = new Random();
+		int wordInt = 0;
+		String line = null;
+		int i = 0;
+		wordToGuess.setText("");
+		
+		while ( (line = wordsReader.readLine()) != null)
+		{
+			String[] values = line.split("\n");
+			for (String str : values)
+			{
+				words.add(str);
+			}
+		}
+		wordsReader.close();
+		
+		wordInt = rand.nextInt(words.size() - 1);
+		System.out.println(words.get(wordInt));
+		
+		for (i = 0; i < words.get(wordInt).length(); i++)
+		{
+			wordToGuess.setText(wordToGuess.getText() + "_");
+		}
+		hangmanWord = words.get(wordInt);
+		
+		System.out.println("- Function hangmanPickWord() Completed");
+	}
+	
+	@FXML public void hangmanGuess(ActionEvent event) {
+		System.out.println("- Function hangmanGuess() Triggered");
+
+		int i = 0;
+		char[] chars = wordToGuess.getText().toCharArray();
+		StringBuilder str = new StringBuilder(hangmanLettersGuessed.getText());
+		boolean right = false;
+		
+		if (wordBox.getText().length() <= 1)
+		{
+			if ( (wordBox.getText().equals("")) || !(Character.isLetter(wordBox.getText().charAt(0))) )
+			{
+				errorMsg.setText("Enter a valid letter!");
+			}
+			else
+			{
+				for (i = 0; i < hangmanWord.length(); i++)
+				{
+					if (Character.toLowerCase(wordBox.getText().charAt(0)) == hangmanWord.charAt(i))
+					{
+						chars[i] = Character.toLowerCase(wordBox.getText().charAt(0));
+						right = true;
+					}
+				}
+				
+				wordToGuess.setText(String.valueOf(chars));
+				if (right == false)
+				{
+					str.append(Character.toUpperCase(wordBox.getText().charAt(0)));
+					hangmanLettersGuessed.setText(str.toString() + "  ");
+					strikes++;
+					updateTurn("hangman", true);
+				}
+				else
+				{
+					str.append(Character.toUpperCase(wordBox.getText().charAt(0)));
+					hangmanLettersGuessed.setText(str.toString() + "  ");
+				}
+				if (hangmanLoseCheck(strikes) == false)
+				{
+					errorMsg.setText("Both Players Lose!\nClick Anywhere To Reset");
+					
+					getHangmanGameEndBuffer().setDisable(false);
+					getHangmanGameEndBuffer().setVisible(true);
+				}
+				if (!wordToGuess.getText().contains("_"))
+				{
+					wordToGuess.setText(hangmanWord);
+					getTurnLabel().setFont(Font.font("System", FontWeight.BOLD, 32));
+					setTurnLabel("Player " + getPlayerTurn() + " WINS!");
+					if (getPlayerTurn() == 1) {
+						setPlayer1ScoreNum(getPlayer1ScoreNum() + 1);
+						setPlayer1ScoreLabel(String.valueOf(getPlayer1ScoreNum()));
+					}
+					else {
+						setPlayer2ScoreNum(getPlayer2ScoreNum() + 1);
+						setPlayer2ScoreLabel(String.valueOf(getPlayer2ScoreNum()));
+					}
+					getHangmanGameEndBuffer().setDisable(false);
+					getHangmanGameEndBuffer().setVisible(true);
+				}
+			}
+		}
+		else
+		{
+			if ( (wordBox.getText().equals("")) || !(wordBox.getText().matches("^[a-zA-Z]*$")) )
+			{
+				errorMsg.setText("Enter a valid letter!");
+			}
+			else
+			{
+				if (wordBox.getText().equals(hangmanWord))
+				{
+					wordToGuess.setText(wordBox.getText());
+					getTurnLabel().setFont(Font.font("System", FontWeight.BOLD, 32));
+					setTurnLabel("Player " + getPlayerTurn() + " WINS!");
+					if (getPlayerTurn() == 1) {
+						setPlayer1ScoreNum(getPlayer1ScoreNum() + 1);
+						setPlayer1ScoreLabel(String.valueOf(getPlayer1ScoreNum()));
+					}
+					else {
+						setPlayer2ScoreNum(getPlayer2ScoreNum() + 1);
+						setPlayer2ScoreLabel(String.valueOf(getPlayer2ScoreNum()));
+					}
+					getHangmanGameEndBuffer().setDisable(false);
+					getHangmanGameEndBuffer().setVisible(true);
+				}
+			}
+		}
+		System.out.println("- Function hangmanGuess() Completed");
+	}
+	
+	public boolean hangmanLoseCheck(int strikes)
+	{
+		System.out.println("- Function hangmanLoseCheck() Triggered");
+		
+		System.out.println("- Function hangmanLoseCheck() Completed");
+		switch (strikes)
+		{
+		case 0:
+			return true;
+		case 1:
+			hangmanHead.setVisible(true);
+			return true;
+		case 2:
+			hangmanBody.setVisible(true);
+			return true;
+		case 3:
+			hangmanLeftArm.setVisible(true);
+			return true;
+		case 4:
+			hangmanRightArm.setVisible(true);
+			return true;
+		case 5:
+			hangmanLeftLeg.setVisible(true);
+			return true;
+		case 6:
+			hangmanRightLeg.setVisible(true);
+			hangmanLeftEye1.setVisible(true);
+			hangmanLeftEye2.setVisible(true);
+			hangmanRightEye1.setVisible(true);
+			hangmanRightEye2.setVisible(true);
+			hangmanMouth.setVisible(true);
+			return false;
+		default:
+			return false;
+		}
+		
+	}
+	
+	@FXML public void clearHangmanBoard() {
+		System.out.println("- Function clearHangmanBoard() Triggered");
+		hangmanHead.setVisible(false);
+		hangmanLeftArm.setVisible(false);
+		hangmanRightArm.setVisible(false);
+		hangmanLeftLeg.setVisible(false);
+		hangmanRightLeg.setVisible(false);
+		hangmanBody.setVisible(false);
+		hangmanLeftEye1.setVisible(false);
+		hangmanLeftEye2.setVisible(false);
+		hangmanRightEye1.setVisible(false);
+		hangmanRightEye2.setVisible(false);
+		hangmanMouth.setVisible(false);
+		hangmanLettersGuessed.setText("");
+		try {
+			
+			hangmanPickWord();
+		} 
+		catch (IOException e) {
+			
+			System.out.println("lol");
+		}
+		strikes = 0;
+		
+		System.out.println("- Function clearHangmanBoard() Completed");
 	}
 	
 	@FXML public void loadTicTacToe(ActionEvent event) {
@@ -270,6 +516,21 @@ public class MainController {
 				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(⚫)" : "(⚪)"));
 			}
 		}
+		if (str == "hangman" && b == true) {
+			getTurnLabel().setFont(Font.font("System", FontWeight.BOLD, 32));
+			if (getPlayerTurn() == 0) {
+				setPlayerTurn(1);
+				setTurnLabel("Player " + getPlayerTurn() + "'s Turn ");
+			}
+			else if (getPlayerTurn() == 2) {
+				setPlayerTurn(1);
+				setTurnLabel("Player " + getPlayerTurn() + "'s Turn ");
+			}
+			else {
+				setPlayerTurn(2);
+				setTurnLabel("Player " + getPlayerTurn() + "'s Turn ");
+			}
+		}
 	}
 	
 	public void modifyScorePane(int x, int y, Color color) {
@@ -286,6 +547,12 @@ public class MainController {
 		getGameEndBuffer().setDisable(true);
 		updateTurn("tictactoe",true);
 		clearTicTacToeBoard();
+	}
+	@FXML public void disableHangmanResultDisplay() {
+		getHangmanGameEndBuffer().setVisible(false);
+		getHangmanGameEndBuffer().setDisable(true);
+		updateTurn("hangman",true);
+		clearHangmanBoard();
 	}
 	
 	public void disableAllAnchors() {
@@ -400,4 +667,29 @@ public class MainController {
 	public int getPlayer2ScoreNum() {
 		return this.player2ScoreNum;
 	}
+	public AnchorPane getHangmanScreen() {
+		return hangmanScreen;
+	}
+	public AnchorPane getHangmanGame() {
+		return hangmanGame;
+	}
+	public AnchorPane getHangmanTitle() {
+		return hangmanTitle;
+	}
+	public Circle getHangmanHead() {
+		return hangmanHead;
+	}
+	public Label getHangmanLettersGuessed() {
+		return hangmanLettersGuessed;
+	}
+	public String getHangmanWord() {
+		return hangmanWord;
+	}
+	public int getStrikes() {
+		return strikes;
+	}
+	public Button getHangmanGameEndBuffer() {
+		return hangmanGameEndBuffer;
+	}
+	
 }

@@ -2,14 +2,83 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.QuadCurve?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="home" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MainController">
    <children>
-      <AnchorPane fx:id="tictactoeScreen" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" style="-fx-background-color: rgb(51,190,190);">
+      <AnchorPane fx:id="hangmanScreen" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" style="-fx-background-color: rgb(51,190,190);">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="#d2d2d2" height="700.0" layoutX="10.0" layoutY="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="780.0" />
+            <Line endX="98.5" endY="-0.5" layoutX="299.0" layoutY="108.0" startX="0.5" startY="-0.5" />
+            <Line endX="66.0" endY="-83.0" layoutX="332.0" layoutY="206.0" startX="66.0" startY="-98.0" />
+            <Line endX="10.0" endY="214.0" layoutX="290.0" layoutY="164.0" startX="10.0" startY="-56.0" />
+            <Line endX="50.0" layoutX="301.0" layoutY="379.0" startX="-50.0" />
+            <Line fx:id="hangmanBody" endY="9.29290771484375" layoutX="399.0" layoutY="226.0" startY="-54.0" />
+            <Line fx:id="hangmanRightLeg" endX="-0.5" endY="-1.20709228515625" layoutX="399.0" layoutY="238.0" startX="-23.0" startY="37.0" />
+            <Line fx:id="hangmanLeftLeg" endX="-23.0" endY="-16.20709228515625" layoutX="422.0" layoutY="252.0" startX="1.0" startY="24.0" />
+            <Line fx:id="hangmanRightArm" endX="50.0" endY="6.0" layoutX="349.0" layoutY="197.0" startX="15.0" startY="-10.0" />
+            <Line fx:id="hangmanLeftArm" endX="-30.0" endY="-15.0" layoutX="460.0" layoutY="204.0" startX="-60.0" startY="-1.0" />
+            <Circle fx:id="hangmanHead" fill="WHITE" layoutX="398.0" layoutY="149.0" radius="25.0" stroke="BLACK" strokeType="INSIDE" />
+            <Line fx:id="hangmanRightEye2" endX="6.333343505859375" endY="5.3333282470703125" layoutX="387.0" layoutY="140.0" startX="-3.0" startY="-3.3333282470703125" />
+            <Line fx:id="hangmanRightEye1" endX="-4.333343505859375" endY="-14.0" layoutX="397.0" layoutY="150.0" startX="-13.0" startY="-4.0" />
+            <Line fx:id="hangmanLeftEye2" endX="6.333343505859375" endY="5.3333282470703125" layoutX="403.0" layoutY="140.0" startX="-3.0" startY="-3.3333282470703125" />
+            <Line fx:id="hangmanLeftEye1" endX="-4.333343505859375" endY="-14.0" layoutX="413.0" layoutY="150.0" startX="-13.0" startY="-4.0" />
+            <QuadCurve fx:id="hangmanMouth" controlX="-8.333343505859375" controlY="-42.66667175292969" endX="1.0" endY="-24.666671752929688" fill="#1f93ff00" layoutX="407.0" layoutY="190.0" startX="-23.666656494140625" startY="-24.666671752929688" stroke="BLACK" strokeType="INSIDE" />
+            <AnchorPane fx:id="hangmanGame" layoutX="10.0" layoutY="383.0" prefHeight="403.0" prefWidth="780.0">
+               <children>
+                  <Label fx:id="errorMsg" alignment="CENTER" contentDisplay="CENTER" layoutX="268.0" layoutY="173.0" prefHeight="50.0" prefWidth="246.0" textAlignment="CENTER" textFill="RED" />
+                  <TextField fx:id="wordBox" alignment="CENTER" layoutX="241.0" layoutY="70.0" prefHeight="25.0" prefWidth="300.0" promptText="Enter a letter or word">
+                     <font>
+                        <Font name="Arial" size="27.0" />
+                     </font>
+                  </TextField>
+                  <Label fx:id="wordToGuess" alignment="CENTER" layoutX="9.0" layoutY="14.0" prefHeight="56.0" prefWidth="764.0" textAlignment="CENTER">
+                     <font>
+                        <Font name="Arial Bold" size="30.0" />
+                     </font>
+                  </Label>
+                  <Label alignment="CENTER" layoutX="13.0" layoutY="249.0" prefHeight="36.0" prefWidth="758.0" text="Letters Guessed" textAlignment="CENTER">
+                     <font>
+                        <Font name="Arial Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="hangmanLettersGuessed" alignment="CENTER" layoutX="13.0" layoutY="298.0" prefHeight="36.0" prefWidth="758.0" textAlignment="CENTER">
+                     <font>
+                        <Font name="Arial Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="guessButton" layoutX="350.0" layoutY="129.0" mnemonicParsing="false" onAction="#hangmanGuess" prefHeight="36.0" prefWidth="81.0" style="-fx-background-color: rgb(250, 250, 250);" text="Guess">
+                     <font>
+                        <Font name="Arial Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="hangmanTitle" layoutX="11.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="780.0">
+               <children>
+                  <Rectangle fill="#737373" height="70.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="780.0" />
+                  <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#loadMenu" onMouseEntered="#hoverHighlightEnter" onMouseExited="#hoverHighlightExit" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: rgb(210,210,210); -fx-padding: 8 16;" text="&lt; Back">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" layoutX="140.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="630.0" style="-fx-background-color: rgb(210,210,210);" text="Hangman">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <Button fx:id="hangmanGameEndBuffer" disable="true" layoutX="10.0" layoutY="91.0" mnemonicParsing="false" onAction="#disableHangmanResultDisplay" opacity="0.0" prefHeight="700.0" prefWidth="780.0" visible="false" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="tictactoeScreen" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" style="-fx-background-color: rgb(51,190,190);" visible="false">
          <children>
             <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="#d2d2d2" height="700.0" layoutX="10.0" layoutY="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="780.0" />
             <Line endX="185.0" endY="555.0" layoutX="120.0" layoutY="220.0" startX="185.0" startY="5.0" strokeWidth="10.0" />
@@ -81,7 +150,7 @@
             </AnchorPane>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="connect4Screen" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" style="-fx-background-color: rgb(51,190,190);">
+      <AnchorPane fx:id="connect4Screen" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" style="-fx-background-color: rgb(51,190,190);" visible="false">
          <children>
             <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="#d2d2d2" height="700.0" layoutX="10.0" layoutY="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="780.0" />
             <AnchorPane fx:id="connect4Title" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="780.0">
@@ -112,6 +181,11 @@
                         <Font name="System Bold" size="24.0" />
                      </font></Button>
                   <Button alignment="CENTER" layoutX="220.0" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#loadConnect4" onMouseEntered="#hoverHighlightEnter" onMouseExited="#hoverHighlightExit" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: rgb(210,210,210);" text="Connect 4">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="CENTER" layoutX="420.0" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#loadHangman" onMouseEntered="#hoverHighlightEnter" onMouseExited="#hoverHighlightExit" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: rgb(210,210,210);" text="Hangman">
                      <font>
                         <Font name="System Bold" size="24.0" />
                      </font>
