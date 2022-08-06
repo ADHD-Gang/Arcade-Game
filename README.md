@@ -4,13 +4,20 @@ Arcade Game is an application that allows you to play a selection of games such 
 - scorekeeping for each player, persistent between different games
 - easy way to reset at the end of each game to start a new round
 - easy access between different games; beginning a game doesn't disallow users from exiting and beginning a different game
+### Functionality
+- enter arcade
+- select one of several different games
+- scorekeeping for player 1 and player 2 for each victory gained
+- back button to exit game
+- mouse-click and keyboard input for playing games
+- prompts to keep track of which player's turn it is, whether game was won, etc.
 # Installing
 > Note that this project was written in and built with Eclipse; it is recommended to import these files into Eclipse and running the application there.
-## Clone via GitHub Website
+### Clone via GitHub Website
 1. Click the green "code" button at the top of the repo page.
 2. Select which option you would like to clone with. If you are unsure, choose the "HTTPS" option. Note: If you do not have SSH keys in your GitHub account, it will either prompt you to add a new public key to your account or will ask you to clone via HTTPS.
 3. Select which option you would like to use for completing the cloning process. If you are unsure, choose "Download ZIP". A zip archive of the project will be downloaded to your system. From there, you may import the files into Eclipse and run the project.
-## Clone via CLI
+### Clone via CLI
 `git clone https://github.com/ADHD-Gang/Arcade-Game.git`
 # Importing Project into Eclipse
 1. Click "File" in menu.
