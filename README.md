@@ -6,7 +6,7 @@ Arcade Game is an application that allows you to play a selection of games such 
 - easy access between different games; beginning a game doesn't disallow users from exiting and beginning a different game
 # Installing
 > Note that this project was written in and built with Eclipse; it is recommended to import these files into Eclipse and running the application there.
-## Clone via website
+## Clone via GitHub Website
 1. Click the green "code" button at the top of the repo page.
 2. Select which option you would like to clone with. If you are unsure, choose the "HTTPS" option. Note: If you do not have SSH keys in your GitHub account, it will either prompt you to add a new public key to your account or will ask you to clone via HTTPS.
 3. Select which option you would like to use for completing the cloning process. If you are unsure, choose "Download ZIP". A zip archive of the project will be downloaded to your system. From there, you may import the files into Eclipse and run the project.
