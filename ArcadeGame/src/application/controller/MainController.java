@@ -51,6 +51,7 @@ public class MainController {
 	@FXML private Label errorMsg;
 	@FXML private Label wordToGuess;
 	@FXML private Button hangmanGameEndBuffer;
+	@FXML private Button connect4GameEndBuffer;
 	@FXML private QuadCurve hangmanMouth;
 	@FXML private Line hangmanLeftEye1;
 	@FXML private Line hangmanLeftEye2;
@@ -90,7 +91,26 @@ public class MainController {
 		b.setStyle("-fx-background-color: rgb(210,210,210);");
 		//System.out.println(" - Function (menuBarHoverExit) Completed");
 	}
-	
+	@FXML public void connect4HoverEnter(MouseEvent event) {
+		Button b = (Button) event.getSource();
+		if(b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(255,255,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0)") {
+			b.setStyle("-fx-background-radius: 35; -fx-background-color: rgb(255,255,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0)");
+		}
+	}
+	@FXML public void connect4HoverExit(MouseEvent event) {
+		Button b = (Button) event.getSource();
+		if(b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(255,255,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0)") {
+			b.setStyle("-fx-background-radius: 35; -fx-border-radius: 35; -fx-border-color: rgb(0,0,0)");
+		}
+	}	
+	@FXML public void resetHoverEnter(MouseEvent event) {
+		Button b = (Button) event.getSource();
+		b.setStyle("-fx-background-color: rgb(50,154,255);");
+	}
+	@FXML public void resetHoverExit(MouseEvent event) {
+		Button b = (Button) event.getSource();
+		b.setStyle("-fx-background-color: rgb(30,144,255);");
+	}
 	@FXML public void tictactoeHoverEnter(MouseEvent event) {
 		Button b = (Button) event.getSource();
 		if (b.getText() == "X" || b.getText() == "O") {
@@ -474,7 +494,7 @@ public class MainController {
 		getConnect4Title().setVisible(true);
 		getConnect4Game().setDisable(false);
 		getConnect4Game().setVisible(true);
-		//clearConnect4Board();
+		clearConnect4Board();
 		modifyScorePane(10,90,Color.BLACK);
 		getScorePane().setDisable(false);
 		getScorePane().setVisible(true);
@@ -484,6 +504,781 @@ public class MainController {
 		
 		System.out.println("- Function loadConnect4() Completed");
 	}
+	
+	@FXML public void connect4PlaceTile(ActionEvent event) {
+		Button b = (Button) event.getSource();
+		Button b2 = (Button) b;
+
+		if(b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(255,0,0); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);" ||
+		   b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(0,0,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);") {			
+			return;
+		}
+		
+		String id = b.getId();
+		String[] cords = id.split(",");
+		int x = Integer.valueOf(cords[0]);
+		int y = Integer.valueOf(cords[1]);
+		
+		/*for (int i = y; i < 9; i++) {	
+			boolean emptyBelow = connect4CheckBelow(x, i);*/
+			//if (emptyBelow == false) {
+				System.out.println(b2.getId());
+				b2.setText(getPlayerTurn() == 1? "R" : "B");
+				b2.setStyle(getPlayerTurn() == 1 ? "-fx-background-radius: 35; -fx-background-color: rgb(255,0,0); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);" :
+					"-fx-background-radius: 35; -fx-background-color: rgb(0,0,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);");
+				updateTurn("connect4", connect4WinCheck());
+			//}
+		//}
+	}
+	
+	public boolean connect4CheckBelow(int x, int y) {
+		System.out.println("- Function connect4CheckBelow() Triggered");
+		boolean emptyBelow = true;
+		String board[][] = new String[9][9];
+		int i = 0;
+		int j = y + 1;
+		for (Node child : getConnect4Game().getChildren()) {
+			Button b = (Button) child;
+			
+			board[i % 9][i / 6] = b.getText();// b.getStyle();
+			i++;
+		}
+		String letter = (getPlayerTurn() == 1 ? "R" : "B");
+		if(board[x][j] == letter) {
+			emptyBelow = false;
+		}
+		return emptyBelow;
+	}
+	
+	/*public String connect4ButtonBelow(int x, int y) {
+		String cords;
+		int i = 0;
+		for()
+			connect4CheckBelow(x, y);
+		
+		cords = (x+","+y);
+		return cords;
+	}*/
+	
+	public boolean connect4WinCheck() {
+		System.out.println("- Function connect4WinCheck() Triggered");
+		
+		boolean shouldUpdate = true;
+		
+		String board[][] = new String[9][9];
+		int i = 0;
+		int tileCount = 0;
+		for (Node child : getConnect4Game().getChildren()) {
+			Button b = (Button) child;
+		
+			//if(b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(255,0,0); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);" ||
+					  // b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(0,0,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);") {
+			if (b.getText() == "R" || b.getText() == "B") {
+
+				tileCount++;
+			}
+			board[i % 9][i / 9] = b.getText(); //b.getStyle();
+			i++;
+		}
+		if (tileCount == 54) {
+			connect4WinDisplay(false);
+			shouldUpdate = false;
+		}
+		
+		else {
+			//String letter = (getPlayerTurn() == 1 ? "-fx-background-radius: 35; -fx-background-color: rgb(255,0,0); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);" :
+					//"-fx-background-radius: 35; -fx-background-color: rgb(0,0,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);");
+			String letter = (getPlayerTurn() == 1 ? "R" : "B");
+			if (board[0][0] == letter && board[1][0] == letter && board[2][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[1][0] == letter && board[2][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][0] == letter && board[2][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][0] == letter && board[6][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][0] == letter && board[6][0] == letter && board[7][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][0] == letter && board[5][0] == letter && board[6][0] == letter && board[7][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][1] == letter && board[1][1] == letter && board[2][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[1][1] == letter && board[2][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][1] == letter && board[2][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][1] == letter && board[6][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][1] == letter && board[6][1] == letter && board[7][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][1] == letter && board[5][1] == letter && board[6][1] == letter && board[7][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][2] == letter && board[1][2] == letter && board[2][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[1][2] == letter && board[2][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][2] == letter && board[2][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][2] == letter && board[6][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][2] == letter && board[6][2] == letter && board[7][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][2] == letter && board[5][2] == letter && board[6][2] == letter && board[7][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][3] == letter && board[1][3] == letter && board[2][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[1][3] == letter && board[2][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][3] == letter && board[2][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][3] == letter && board[6][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][3] == letter && board[6][3] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][3] == letter && board[5][3] == letter && board[6][3] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][4] == letter && board[1][4] == letter && board[2][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[1][4] == letter && board[2][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][4] == letter && board[2][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][4] == letter && board[6][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][4] == letter && board[6][4] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][4] == letter && board[5][4] == letter && board[6][4] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][5] == letter && board[1][5] == letter && board[2][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[1][5] == letter && board[2][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][5] == letter && board[2][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][5] == letter && board[6][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][5] == letter && board[6][5] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][5] == letter && board[5][5] == letter && board[6][5] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][0] == letter && board[0][1] == letter && board[0][2] == letter && board[0][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][1] == letter && board[0][2] == letter && board[0][3] == letter && board[0][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][2] == letter && board[0][3] == letter && board[0][4] == letter && board[0][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][0] == letter && board[1][1] == letter && board[1][2] == letter && board[1][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][1] == letter && board[1][2] == letter && board[1][3] == letter && board[1][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][2] == letter && board[1][3] == letter && board[1][4] == letter && board[1][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][0] == letter && board[2][1] == letter && board[2][2] == letter && board[2][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][1] == letter && board[2][2] == letter && board[2][3] == letter && board[2][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][2] == letter && board[2][3] == letter && board[2][4] == letter && board[2][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][0] == letter && board[3][1] == letter && board[3][2] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][1] == letter && board[3][2] == letter && board[3][3] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][2] == letter && board[3][3] == letter && board[3][4] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[4][1] == letter && board[4][2] == letter && board[4][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[4][2] == letter && board[4][3] == letter && board[4][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[4][3] == letter && board[4][4] == letter && board[4][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][0] == letter && board[5][1] == letter && board[5][2] == letter && board[5][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][1] == letter && board[5][2] == letter && board[5][3] == letter && board[5][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][2] == letter && board[5][3] == letter && board[5][4] == letter && board[5][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[6][0] == letter && board[6][1] == letter && board[6][2] == letter && board[6][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[6][1] == letter && board[6][2] == letter && board[6][3] == letter && board[6][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[6][2] == letter && board[6][3] == letter && board[6][4] == letter && board[6][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[7][0] == letter && board[7][1] == letter && board[7][2] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[7][1] == letter && board[7][2] == letter && board[7][3] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[7][2] == letter && board[7][3] == letter && board[7][3] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][0] == letter && board[8][1] == letter && board[8][2] == letter && board[8][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][1] == letter && board[8][2] == letter && board[8][3] == letter && board[8][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][2] == letter && board[8][3] == letter && board[8][4] == letter && board[8][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][0] == letter && board[1][0] == letter && board[2][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[1][0] == letter && board[2][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][0] == letter && board[2][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][0] == letter && board[6][0] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][0] == letter && board[6][0] == letter && board[7][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][0] == letter && board[5][0] == letter && board[6][0] == letter && board[7][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][1] == letter && board[1][1] == letter && board[2][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[1][1] == letter && board[2][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][1] == letter && board[2][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][1] == letter && board[6][1] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][1] == letter && board[6][1] == letter && board[7][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][1] == letter && board[5][1] == letter && board[6][1] == letter && board[7][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][2] == letter && board[1][2] == letter && board[2][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[1][2] == letter && board[2][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][2] == letter && board[2][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][2] == letter && board[6][2] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][2] == letter && board[6][2] == letter && board[7][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][2] == letter && board[5][2] == letter && board[6][2] == letter && board[7][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][3] == letter && board[1][3] == letter && board[2][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[1][3] == letter && board[2][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][3] == letter && board[2][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][3] == letter && board[6][3] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][3] == letter && board[6][3] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][3] == letter && board[5][3] == letter && board[6][3] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][4] == letter && board[1][4] == letter && board[2][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[1][4] == letter && board[2][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][4] == letter && board[2][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][4] == letter && board[6][4] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][4] == letter && board[6][4] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][4] == letter && board[5][4] == letter && board[6][4] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][5] == letter && board[1][5] == letter && board[2][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[1][5] == letter && board[2][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][5] == letter && board[2][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][5] == letter && board[6][5] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][5] == letter && board[6][5] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][5] == letter && board[5][5] == letter && board[6][5] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][0] == letter && board[0][1] == letter && board[0][2] == letter && board[0][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][1] == letter && board[0][2] == letter && board[0][3] == letter && board[0][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][2] == letter && board[0][3] == letter && board[0][4] == letter && board[0][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][0] == letter && board[1][1] == letter && board[1][2] == letter && board[1][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][1] == letter && board[1][2] == letter && board[1][3] == letter && board[1][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][2] == letter && board[1][3] == letter && board[1][4] == letter && board[1][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][0] == letter && board[2][1] == letter && board[2][2] == letter && board[2][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][1] == letter && board[2][2] == letter && board[2][3] == letter && board[2][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][2] == letter && board[2][3] == letter && board[2][4] == letter && board[2][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][0] == letter && board[3][1] == letter && board[3][2] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][1] == letter && board[3][2] == letter && board[3][3] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][2] == letter && board[3][3] == letter && board[3][4] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[4][1] == letter && board[4][2] == letter && board[4][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[4][2] == letter && board[4][3] == letter && board[4][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[4][3] == letter && board[4][4] == letter && board[4][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][0] == letter && board[5][1] == letter && board[5][2] == letter && board[5][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][1] == letter && board[5][2] == letter && board[5][3] == letter && board[5][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][2] == letter && board[5][3] == letter && board[5][4] == letter && board[5][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[6][0] == letter && board[6][1] == letter && board[6][2] == letter && board[6][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[6][1] == letter && board[6][2] == letter && board[6][3] == letter && board[6][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[6][2] == letter && board[6][3] == letter && board[6][4] == letter && board[6][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[7][0] == letter && board[7][1] == letter && board[7][2] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[7][1] == letter && board[7][2] == letter && board[7][3] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[7][2] == letter && board[7][3] == letter && board[7][3] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][0] == letter && board[8][1] == letter && board[8][2] == letter && board[8][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][1] == letter && board[8][2] == letter && board[8][3] == letter && board[8][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[8][2] == letter && board[8][3] == letter && board[8][4] == letter && board[8][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][0] == letter && board[1][1] == letter && board[2][2] == letter && board[3][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][0] == letter && board[2][1] == letter && board[3][2] == letter && board[4][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][0] == letter && board[3][1] == letter && board[4][2] == letter && board[5][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][0] == letter && board[4][1] == letter && board[5][2] == letter && board[6][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][0] == letter && board[5][1] == letter && board[6][2] == letter && board[7][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][0] == letter && board[6][1] == letter && board[7][2] == letter && board[8][3] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][1] == letter && board[1][2] == letter && board[2][3] == letter && board[3][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][1] == letter && board[2][2] == letter && board[3][3] == letter && board[4][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][1] == letter && board[3][2] == letter && board[4][3] == letter && board[5][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][1] == letter && board[4][2] == letter && board[5][3] == letter && board[6][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][1] == letter && board[5][2] == letter && board[6][3] == letter && board[7][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][1] == letter && board[6][2] == letter && board[7][3] == letter && board[8][4] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][2] == letter && board[1][3] == letter && board[2][4] == letter && board[3][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][2] == letter && board[2][3] == letter && board[3][4] == letter && board[4][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][2] == letter && board[3][3] == letter && board[4][4] == letter && board[5][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][2] == letter && board[4][3] == letter && board[5][4] == letter && board[6][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][2] == letter && board[5][3] == letter && board[6][4] == letter && board[7][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][2] == letter && board[6][3] == letter && board[7][4] == letter && board[8][5] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][3] == letter && board[1][2] == letter && board[2][1] == letter && board[3][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][3] == letter && board[2][2] == letter && board[3][1] == letter && board[4][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][3] == letter && board[3][2] == letter && board[4][1] == letter && board[5][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][3] == letter && board[4][2] == letter && board[5][1] == letter && board[6][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][3] == letter && board[5][2] == letter && board[6][1] == letter && board[7][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][3] == letter && board[6][2] == letter && board[7][1] == letter && board[8][0] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][4] == letter && board[1][3] == letter && board[2][2] == letter && board[3][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][4] == letter && board[2][3] == letter && board[3][2] == letter && board[4][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][4] == letter && board[3][3] == letter && board[4][2] == letter && board[5][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][4] == letter && board[4][3] == letter && board[5][2] == letter && board[6][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][4] == letter && board[5][3] == letter && board[6][2] == letter && board[7][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][4] == letter && board[6][3] == letter && board[7][2] == letter && board[8][1] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[0][5] == letter && board[1][4] == letter && board[2][3] == letter && board[3][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[1][5] == letter && board[2][4] == letter && board[3][3] == letter && board[4][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[2][5] == letter && board[3][4] == letter && board[4][3] == letter && board[5][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[3][5] == letter && board[4][4] == letter && board[5][3] == letter && board[6][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[4][5] == letter && board[5][4] == letter && board[6][3] == letter && board[7][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			else if (board[5][5] == letter && board[6][4] == letter && board[7][3] == letter && board[8][2] == letter) {
+				connect4WinDisplay(true);
+				shouldUpdate = false;
+			}
+			
+		}
+		
+		System.out.println("- Function connect4WinCheck() Completed");
+		return shouldUpdate;
+	}
+
+	
+	public void connect4WinDisplay(Boolean b) {
+		System.out.println("- - Function connect4WinDisplay() Triggered");
+		if (b == true) {
+			getTurnLabel().setFont(Font.font("System", FontWeight.BOLD, 32));
+			setTurnLabel("Player " + getPlayerTurn() + " WINS!");
+			if (getPlayerTurn() == 1) {
+				setPlayer1ScoreNum(getPlayer1ScoreNum() + 1);
+				setPlayer1ScoreLabel(String.valueOf(getPlayer1ScoreNum()));
+			}
+			else {
+				setPlayer2ScoreNum(getPlayer2ScoreNum() + 1);
+				setPlayer2ScoreLabel(String.valueOf(getPlayer2ScoreNum()));
+			}
+		}
+		else {
+			setTurnLabel("The Game Ended In A Draw!");
+			getTurnLabel().setFont(Font.font("System", FontWeight.BOLD, 20));
+		}
+		getConnect4GameEndBuffer().setDisable(false);
+		getConnect4GameEndBuffer().setVisible(true);
+		System.out.println("- - Function connect4WinDisplay() Completed");
+	}
+	
+	public void clearConnect4Board() {
+		for (Node child : getConnect4Game().getChildren()) {
+			Button b = (Button) child;
+			if (b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(255,0,0); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);" ||
+					   b.getStyle() == "-fx-background-radius: 35; -fx-background-color: rgb(0,0,255); -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);") {
+				b.setText("");
+				b.setStyle("-fx-background-radius: 35; -fx-border-radius: 35; -fx-border-color: rgb(0,0,0);");
+			}
+		}
+	}
+	
 	
 	public void updateTurn(String str, boolean b) {
 		if (str == "tictactoe" && b == true) {
@@ -502,18 +1297,18 @@ public class MainController {
 			}
 		}
 		if (str == "connect4" && b == true) {
-			// TO-DO Connect 4 Turn Structure
+			getTurnLabel().setFont(Font.font("System", FontWeight.BOLD, 32));
 			if (getPlayerTurn() == 0) {
 				setPlayerTurn(1);
-				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(⚫)" : "(⚪)"));
+				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(R)" : "(B)"));
 			}
 			else if (getPlayerTurn() == 2) {
 				setPlayerTurn(1);
-				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(⚫)" : "(⚪)"));
+				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(R)" : "(B)"));
 			}
 			else {
 				setPlayerTurn(2);
-				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(⚫)" : "(⚪)"));
+				setTurnLabel("Player " + getPlayerTurn() + "'s Turn " + (getPlayerTurn() == 1 ? "(R)" : "(B)"));
 			}
 		}
 		if (str == "hangman" && b == true) {
@@ -554,7 +1349,12 @@ public class MainController {
 		updateTurn("hangman",true);
 		clearHangmanBoard();
 	}
-	
+	@FXML public void disableConnect4ResultDisplay() {
+		getConnect4GameEndBuffer().setVisible(false);
+		getConnect4GameEndBuffer().setDisable(true);
+		updateTurn("connect4",true);
+		clearConnect4Board();
+	}
 	public void disableAllAnchors() {
 		System.out.println("- - Function disableAllAnchors() Triggered");
 		
@@ -690,6 +1490,9 @@ public class MainController {
 	}
 	public Button getHangmanGameEndBuffer() {
 		return hangmanGameEndBuffer;
+	}
+	public Button getConnect4GameEndBuffer() {
+		return connect4GameEndBuffer;
 	}
 	
 }
