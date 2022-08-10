@@ -1,12 +1,12 @@
 # Arcade Game
 ### CS 3443-01T, Dr. Arafat
-Arcade Game is an application that allows you to play a selection of games such as Tic-Tac-Toe and Hangman. It is a two-player experience meant to be shared between two users. It is designed for local play, meaning that both users should use the same system simultaneously for access and input. Features include:
+Arcade Game is an application that allows you to play a selection of games such as Tic-Tac-Toe, Connect Four, and Hangman. It is a two-player experience meant to be shared between two users. It is designed for local play, meaning that both users should use the same system simultaneously for access and input. Features include:
 - scorekeeping for each player, persistent between different games
 - easy way to reset at the end of each game to start a new round
 - easy access between different games; beginning a game doesn't disallow users from exiting and beginning a different game
 ### Functionality
 - enter arcade
-- select one of several different games
+- select one of several different games (tic-tac-toe, hangman, connect four)
 - scorekeeping for player 1 and player 2 for each victory gained
 - back button to exit game
 - mouse-click and keyboard input for playing games
